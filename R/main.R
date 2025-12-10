@@ -55,6 +55,12 @@ stadia <- function(object.list, hyper, dim = 35, n_cluster = 7,
     batch.list <- lapply(X.list, t)
     X <- do.call(cbind, X.list) # pxn
 
+    ### d
+    for (batch in batch.list) {
+              min_dim = min(floor(nrow(batch)/3), floor(ncol(batch)/3))
+              d = min(d, min_dim)
+    }
+
     ## run model
     if (!is.null(platform) && substr(tolower(platform),1,1) %in% c("v", "s")) {
         platform <- tolower(platform)
@@ -64,7 +70,7 @@ stadia <- function(object.list, hyper, dim = 35, n_cluster = 7,
     }
 
     # adjacent matrix for mnn
-    adj_mat_mnn <- mnn_adjacent(batch.list)
+    adj_mat_mnn <- mnn_adjacent(batch.list,d=d)
     out <- stadia_EM_SP(
         X, position, batch_vec, adj_mat_mnn,
         hyper, init, platform,
